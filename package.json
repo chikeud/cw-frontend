@@ -1,0 +1,42 @@
+{
+  "name": "kyc-risk-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend for capital markets KYC, scoring, and identity management using Open Banking APIs",
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@heroicons/react": "^2.1.0",
+    "@mui/icons-material": "^7.1.0",
+    "@mui/material": "^7.1.0",
+    "@tanstack/react-query": "^5.28.0",
+    "axios": "^1.6.0",
+    "clsx": "^2.1.0",
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-query": "^3.39.2",
+    "react-router-dom": "^6.21.0",
+    "recharts": "^2.15.3",
+    "serve": "^14.2.4",
+    "tailwindcss": "^3.4.0",
+    "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "node server.js",
+    "preview": "vite preview",
+    "heroku-postbuild": "npm run build"
+  }
+}
