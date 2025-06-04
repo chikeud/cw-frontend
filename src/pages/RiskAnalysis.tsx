@@ -77,6 +77,20 @@ function RiskAnalysisContent() {
     const [tabValue, setTabValue] = useState(1);
     const [mobileOpen, setMobileOpen] = useState(false);
 
+    const [expandedPanels, setExpandedPanels] = useState({
+        creditDebit: !isMobile,
+        scoring: !isMobile,
+        riskIndicators: !isMobile,
+        explanation: false,
+    });
+
+    const handleExpandChange = (panel: keyof typeof expandedPanels) => (event, isExpanded: boolean) => {
+        setExpandedPanels(prev => ({
+            ...prev,
+            [panel]: isExpanded,
+        }));
+    };
+
     const handleFetch = async () => {
         if (!accountId.trim()) return;
         setLoading(true);
@@ -85,14 +99,14 @@ function RiskAnalysisContent() {
         setScoringData(null);
 
         try {
-            const riskRes = await fetch(` https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/risk/${accountId}`, {
+            const riskRes = await fetch(`https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/risk/${accountId}`, {
                 headers: { Authorization: 'Bearer-1509' },
             });
             if (!riskRes.ok) throw new Error('Failed to fetch risk data');
             const riskJson = await riskRes.json();
             setRiskData(riskJson);
 
-            const scoreRes = await fetch(` https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/scoring/${accountId}`, {
+            const scoreRes = await fetch(`https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/scoring/${accountId}`, {
                 headers: { Authorization: 'Bearer-1509' },
             });
             if (!scoreRes.ok) throw new Error('Failed to fetch scoring data');
@@ -229,125 +243,109 @@ function RiskAnalysisContent() {
                                 <Grid container spacing={4} alignItems="stretch">
                                     {riskData && (
                                         <Grid item xs={12} sm={4}>
-                                            <Card sx={{ height: '100%', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
-                                                <Accordion defaultExpanded={!isMobile} sx={{ flexGrow: 1 }}>
-                                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                        <Typography variant="h6">Credit vs Debit</Typography>
-                                                    </AccordionSummary>
-                                                    <AccordionDetails>
-                                                        <ResponsiveContainer width="100%" height={250} minWidth={200}>
-                                                            <BarChart data={barData} barGap={10}>
-                                                                <XAxis dataKey="name" stroke="#aaa" />
-                                                                <YAxis stroke="#aaa" />
-                                                                <Tooltip
-                                                                    contentStyle={{
-                                                                        backgroundColor: '#2c2c2c',
-                                                                        border: '1px solid #444',
-                                                                        color: '#fff',
-                                                                    }}
-                                                                />
-                                                                <Legend />
-                                                                <Bar dataKey="Credits" fill="#4caf50" barSize={20} />
-                                                                <Bar dataKey="Debits" fill="#f44336" barSize={20} />
-                                                            </BarChart>
-                                                        </ResponsiveContainer>
-                                                    </AccordionDetails>
-                                                </Accordion>
-                                            </Card>
+                                            <Accordion
+                                                expanded={expandedPanels.creditDebit}
+                                                onChange={handleExpandChange('creditDebit')}
+                                                sx={{ flexGrow: 1, borderRadius: '20px' }}
+                                            >
+                                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                    <Typography variant="h6">Credit vs Debit</Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                    <ResponsiveContainer width="100%" height={250}>
+                                                        <BarChart data={barData}>
+                                                            <XAxis dataKey="name" stroke="#aaa" />
+                                                            <YAxis stroke="#aaa" />
+                                                            <Tooltip contentStyle={{ backgroundColor: '#2c2c2c', border: '1px solid #444', color: '#fff' }} />
+                                                            <Legend />
+                                                            <Bar dataKey="Credits" fill="#4caf50" />
+                                                            <Bar dataKey="Debits" fill="#f44336" />
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
+                                                </AccordionDetails>
+                                            </Accordion>
                                         </Grid>
                                     )}
 
                                     {scoringData && (
                                         <Grid item xs={12} sm={4}>
-                                            <Card sx={{ height: '100%', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
-                                                <Accordion defaultExpanded={!isMobile} sx={{ flexGrow: 1 }}>
-                                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                        <Typography variant="h6">Scoring Breakdown</Typography>
-                                                    </AccordionSummary>
-                                                    <AccordionDetails>
-                                                        <List dense>
-                                                            {Object.entries(scoringData.breakdown).map(([key, val]) => (
-                                                                <ListItem key={key}>
-                                                                    <ListItemText
-                                                                        primary={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
-                                                                        secondary={`Score: ${val}`}
-                                                                    />
-                                                                </ListItem>
-                                                            ))}
-                                                        </List>
-                                                    </AccordionDetails>
-                                                </Accordion>
-                                            </Card>
+                                            <Accordion
+                                                expanded={expandedPanels.scoring}
+                                                onChange={handleExpandChange('scoring')}
+                                                sx={{ borderRadius: '20px' }}
+                                            >
+                                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                    <Typography variant="h6">Scoring Breakdown</Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                    <List dense>
+                                                        {Object.entries(scoringData.breakdown).map(([key, val]) => (
+                                                            <ListItem key={key}>
+                                                                <ListItemText
+                                                                    primary={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
+                                                                    secondary={`Score: ${val}`}
+                                                                />
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                </AccordionDetails>
+                                            </Accordion>
                                         </Grid>
                                     )}
 
                                     {riskData && (
                                         <Grid item xs={12} sm={4}>
-                                            <Card sx={{ height: '100%', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
-                                                <Accordion defaultExpanded={!isMobile} sx={{ flexGrow: 1 }}>
-                                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                        <Typography variant="h6">Risk Indicators</Typography>
-                                                    </AccordionSummary>
-                                                    <AccordionDetails>
-                                                        <Box display="flex" flexWrap="wrap" mb={2} gap={2}>
-                                                            {pieData.map((entry, index) => (
-                                                                <Box key={entry.name} display="flex" alignItems="center" gap={1}>
-                                                                    <Box
-                                                                        sx={{
-                                                                            width: 14,
-                                                                            height: 14,
-                                                                            borderRadius: '50%',
-                                                                            backgroundColor: COLORS[index % COLORS.length],
-                                                                        }}
-                                                                    />
-                                                                    <Typography variant="body2">{entry.name}</Typography>
-                                                                </Box>
-                                                            ))}
-                                                        </Box>
-                                                        <ResponsiveContainer width="100%" height={250}>
-                                                            <PieChart>
-                                                                <Pie
-                                                                    data={pieData}
-                                                                    dataKey="value"
-                                                                    nameKey="name"
-                                                                    outerRadius="70%"
-                                                                    stroke="#1e1e1e"
-                                                                    strokeWidth={2}
-                                                                >
-                                                                    {pieData.map((entry, index) => (
-                                                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                                                    ))}
-                                                                </Pie>
-                                                                <Tooltip
-                                                                    contentStyle={{
-                                                                        backgroundColor: '#2c2c2c',
-                                                                        border: '1px solid #444',
-                                                                        color: '#fff',
+                                            <Accordion
+                                                expanded={expandedPanels.riskIndicators}
+                                                onChange={handleExpandChange('riskIndicators')}
+                                                sx={{ flexGrow: 1, borderRadius: '20px' }}
+                                            >
+                                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                    <Typography variant="h6">Risk Indicators</Typography>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                    <Box display="flex" flexWrap="wrap" mb={2} gap={2}>
+                                                        {pieData.map((entry, index) => (
+                                                            <Box key={entry.name} display="flex" alignItems="center" gap={1}>
+                                                                <Box
+                                                                    sx={{
+                                                                        width: 14,
+                                                                        height: 14,
+                                                                        borderRadius: '50%',
+                                                                        backgroundColor: COLORS[index % COLORS.length],
                                                                     }}
                                                                 />
-                                                            </PieChart>
-                                                        </ResponsiveContainer>
-                                                    </AccordionDetails>
-                                                </Accordion>
-                                            </Card>
+                                                                <Typography variant="body2">{entry.name}</Typography>
+                                                            </Box>
+                                                        ))}
+                                                    </Box>
+                                                    <ResponsiveContainer width="100%" height={250}>
+                                                        <PieChart>
+                                                            <Pie data={pieData} dataKey="value" nameKey="name" outerRadius="70%" stroke="#1e1e1e" strokeWidth={2}>
+                                                                {pieData.map((entry, index) => (
+                                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                                ))}
+                                                            </Pie>
+                                                            <Tooltip contentStyle={{ backgroundColor: '#2c2c2c', border: '1px solid #444', color: '#fff' }} />
+                                                        </PieChart>
+                                                    </ResponsiveContainer>
+                                                </AccordionDetails>
+                                            </Accordion>
                                         </Grid>
                                     )}
 
                                     <Grid item xs={12}>
-                                        <Accordion sx={{borderRadius: '20px'}}>
+                                        <Accordion expanded={expandedPanels.explanation} onChange={handleExpandChange('explanation')} sx={{ borderRadius: '20px' }}>
                                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                                 <Typography variant="h6">Scoring Explanation</Typography>
                                             </AccordionSummary>
                                             <AccordionDetails>
                                                 <List dense>
                                                     <ListItem>
-                                                        <ListItemText primary="Income Score"
-                                                                      secondary = " Parameter: totalCredits.
-                                                                      A user with ≥ 500,000 gets 25.
-                                                                      A user with 250,000 gets 12.5 points.
-                                                                      etc" />
-
-
+                                                        <ListItemText
+                                                            primary="Income Score"
+                                                            secondary="Parameter: totalCredits. A user with ≥ 500,000 gets 25. A user with 250,000 gets 12.5 points."
+                                                        />
                                                         <ListItemText
                                                             primary="Gambling Score"
                                                             secondary="2 or more gambling transactions = 0 points, 1 = 10 points, 0 = 20 points"
@@ -376,7 +374,6 @@ function RiskAnalysisContent() {
                                         </Accordion>
                                     </Grid>
                                 </Grid>
-
                             </>
                         )}
                     </Box>
