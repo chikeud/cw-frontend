@@ -204,7 +204,7 @@ function RiskAnalysisContent() {
                                             sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}
                                         >
                                             <Typography variant="h6" color="textSecondary" gutterBottom>
-                                                Surplus Income Ratio
+                                                Disposable Income Ratio
                                             </Typography>
                                             <Typography variant="h3" color="primary">
                                                 {riskData ? `${(riskData.disposableIncomeRatio * 100).toFixed(2)}%` : '—'}
@@ -226,112 +226,115 @@ function RiskAnalysisContent() {
                                     </Card>
                                 </Box>
 
-                                <Grid container spacing={4}>
+                                <Grid container spacing={4} alignItems="stretch">
                                     {riskData && (
-                                        <Grid item xs={12} sm={6}>
-                                            <Accordion>
-                                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                    <Typography variant="h6">Credit vs Debit</Typography>
-                                                </AccordionSummary>
-                                                <AccordionDetails>
-                                                    <ResponsiveContainer width="100%" height={300}>
-                                                        <BarChart data={barData} barGap={10}>
-                                                            <XAxis dataKey="name" stroke="#aaa" />
-                                                            <YAxis stroke="#aaa" />
-                                                            <Tooltip
-                                                                contentStyle={{
-                                                                    backgroundColor: '#2c2c2c',
-                                                                    border: '1px solid #444',
-                                                                    color: '#fff',
-                                                                }}
-                                                            />
-                                                            <Legend />
-                                                            <Bar dataKey="Credits" fill="#4caf50" barSize={20} />
-                                                            <Bar dataKey="Debits" fill="#f44336" barSize={20} />
-                                                        </BarChart>
-                                                    </ResponsiveContainer>
-                                                </AccordionDetails>
-                                            </Accordion>
+                                        <Grid item xs={12} sm={4}>
+                                            <Card sx={{ height: '100%', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
+                                                <Accordion defaultExpanded={!isMobile} sx={{ flexGrow: 1 }}>
+                                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                        <Typography variant="h6">Credit vs Debit</Typography>
+                                                    </AccordionSummary>
+                                                    <AccordionDetails>
+                                                        <ResponsiveContainer width="100%" height={250} minWidth={200}>
+                                                            <BarChart data={barData} barGap={10}>
+                                                                <XAxis dataKey="name" stroke="#aaa" />
+                                                                <YAxis stroke="#aaa" />
+                                                                <Tooltip
+                                                                    contentStyle={{
+                                                                        backgroundColor: '#2c2c2c',
+                                                                        border: '1px solid #444',
+                                                                        color: '#fff',
+                                                                    }}
+                                                                />
+                                                                <Legend />
+                                                                <Bar dataKey="Credits" fill="#4caf50" barSize={20} />
+                                                                <Bar dataKey="Debits" fill="#f44336" barSize={20} />
+                                                            </BarChart>
+                                                        </ResponsiveContainer>
+                                                    </AccordionDetails>
+                                                </Accordion>
+                                            </Card>
                                         </Grid>
                                     )}
 
                                     {scoringData && (
-                                        <Grid item xs={12} sm={6}>
-                                            <Accordion>
-                                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                    <Typography variant="h6">Scoring Breakdown</Typography>
-                                                </AccordionSummary>
-                                                <AccordionDetails>
-                                                    <List dense>
-                                                        {Object.entries(scoringData.breakdown).map(([key, val]) => (
-                                                            <ListItem key={key}>
-                                                                <ListItemText
-                                                                    primary={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
-                                                                    secondary={`Score: ${val}`}
-                                                                />
-                                                            </ListItem>
-                                                        ))}
-                                                    </List>
-                                                </AccordionDetails>
-                                            </Accordion>
+                                        <Grid item xs={12} sm={4}>
+                                            <Card sx={{ height: '100%', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
+                                                <Accordion defaultExpanded={!isMobile} sx={{ flexGrow: 1 }}>
+                                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                        <Typography variant="h6">Scoring Breakdown</Typography>
+                                                    </AccordionSummary>
+                                                    <AccordionDetails>
+                                                        <List dense>
+                                                            {Object.entries(scoringData.breakdown).map(([key, val]) => (
+                                                                <ListItem key={key}>
+                                                                    <ListItemText
+                                                                        primary={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
+                                                                        secondary={`Score: ${val}`}
+                                                                    />
+                                                                </ListItem>
+                                                            ))}
+                                                        </List>
+                                                    </AccordionDetails>
+                                                </Accordion>
+                                            </Card>
                                         </Grid>
                                     )}
 
                                     {riskData && (
-                                        <Grid item xs={12} sm={6}>
-                                            <Accordion>
-                                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                    <Typography variant="h6">Risk Indicators</Typography>
-                                                </AccordionSummary>
-                                                <AccordionDetails>
-                                                    <Box display="flex" flexWrap="wrap" mb={2} gap={2}>
-                                                        {pieData.map((entry, index) => (
-                                                            <Box key={entry.name} display="flex" alignItems="center" gap={1}>
-                                                                <Box
-                                                                    sx={{
-                                                                        width: 14,
-                                                                        height: 14,
-                                                                        borderRadius: '50%',
-                                                                        backgroundColor: COLORS[index % COLORS.length],
+                                        <Grid item xs={12} sm={4}>
+                                            <Card sx={{ height: '100%', borderRadius: '20px', display: 'flex', flexDirection: 'column' }}>
+                                                <Accordion defaultExpanded={!isMobile} sx={{ flexGrow: 1 }}>
+                                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                        <Typography variant="h6">Risk Indicators</Typography>
+                                                    </AccordionSummary>
+                                                    <AccordionDetails>
+                                                        <Box display="flex" flexWrap="wrap" mb={2} gap={2}>
+                                                            {pieData.map((entry, index) => (
+                                                                <Box key={entry.name} display="flex" alignItems="center" gap={1}>
+                                                                    <Box
+                                                                        sx={{
+                                                                            width: 14,
+                                                                            height: 14,
+                                                                            borderRadius: '50%',
+                                                                            backgroundColor: COLORS[index % COLORS.length],
+                                                                        }}
+                                                                    />
+                                                                    <Typography variant="body2">{entry.name}</Typography>
+                                                                </Box>
+                                                            ))}
+                                                        </Box>
+                                                        <ResponsiveContainer width="100%" height={250}>
+                                                            <PieChart>
+                                                                <Pie
+                                                                    data={pieData}
+                                                                    dataKey="value"
+                                                                    nameKey="name"
+                                                                    outerRadius="70%"
+                                                                    stroke="#1e1e1e"
+                                                                    strokeWidth={2}
+                                                                >
+                                                                    {pieData.map((entry, index) => (
+                                                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                                    ))}
+                                                                </Pie>
+                                                                <Tooltip
+                                                                    contentStyle={{
+                                                                        backgroundColor: '#2c2c2c',
+                                                                        border: '1px solid #444',
+                                                                        color: '#fff',
                                                                     }}
                                                                 />
-                                                                <Typography variant="body2">{entry.name}</Typography>
-                                                            </Box>
-                                                        ))}
-                                                    </Box>
-                                                    <ResponsiveContainer width="100%" height={300}>
-                                                        <PieChart>
-                                                            <Pie
-                                                                data={pieData}
-                                                                dataKey="value"
-                                                                nameKey="name"
-                                                                outerRadius="70%"
-                                                                stroke="#1e1e1e"
-                                                                strokeWidth={2}
-                                                            >
-                                                                {pieData.map((entry, index) => (
-                                                                    <Cell
-                                                                        key={`cell-${index}`}
-                                                                        fill={COLORS[index % COLORS.length]}
-                                                                    />
-                                                                ))}
-                                                            </Pie>
-                                                            <Tooltip
-                                                                contentStyle={{
-                                                                    backgroundColor: '#2c2c2c',
-                                                                    border: '1px solid #444',
-                                                                    color: '#fff',
-                                                                }}
-                                                            />
-                                                        </PieChart>
-                                                    </ResponsiveContainer>
-                                                </AccordionDetails>
-                                            </Accordion>
+                                                            </PieChart>
+                                                        </ResponsiveContainer>
+                                                    </AccordionDetails>
+                                                </Accordion>
+                                            </Card>
                                         </Grid>
                                     )}
 
                                     <Grid item xs={12}>
-                                        <Accordion defaultExpanded={!isMobile}>
+                                        <Accordion sx={{borderRadius: '20px'}}>
                                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                                 <Typography variant="h6">Scoring Explanation</Typography>
                                             </AccordionSummary>
@@ -366,6 +369,7 @@ function RiskAnalysisContent() {
                                         </Accordion>
                                     </Grid>
                                 </Grid>
+
                             </>
                         )}
                     </Box>
