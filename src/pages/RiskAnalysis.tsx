@@ -341,6 +341,13 @@ function RiskAnalysisContent() {
                                             <AccordionDetails>
                                                 <List dense>
                                                     <ListItem>
+                                                        <ListItemText primary="Income Score"
+                                                                      secondary = " Parameter: totalCredits.
+                                                                      A user with ≥ 500,000 gets 25.
+                                                                      A user with 250,000 gets 12.5 points.
+                                                                      etc" />
+
+
                                                         <ListItemText
                                                             primary="Gambling Score"
                                                             secondary="2 or more gambling transactions = 0 points, 1 = 10 points, 0 = 20 points"
