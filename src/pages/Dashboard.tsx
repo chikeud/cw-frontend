@@ -6,6 +6,7 @@ import {
     Button,
     Card,
     CardContent,
+    Chip,
     CircularProgress,
     Paper,
     TextField,
@@ -29,7 +30,7 @@ const navItems: NavItem[] = [
 
 type KycResponse = {
     fullName: string;
-    bvn: { bvn: string; birthdate: string };
+    bvn: { bvn: string; birthdate: string; phone: string; };
     dob: string;
     verified: { state: string; status: string };
 };
@@ -52,8 +53,6 @@ function DashboardContent() {
         setError('');
         setKyc(null);
 
-        //console.log(form);
-
         try {
             const res = await fetch('https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/kyc/verify', {
                 method: 'POST',
@@ -70,11 +69,41 @@ function DashboardContent() {
             setKyc(data);
         } catch (err) {
             console.error(err);
-                setError('Invalid/Incomplete KYC data');
+            setError('Invalid/Incomplete KYC data');
         } finally {
             setLoading(false);
         }
     };
+
+    const getStateColor = (state: string) => {
+        switch (state.toLowerCase()) {
+            case 'complete':
+                return 'success';
+            case 'failed':
+                return 'error';
+            case 'review':
+                return 'warning';
+            case 'pending':
+            default:
+                return 'default';
+        }
+    };
+
+    const getStatusColor = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'verified':
+                return 'success';
+            case 'rejected':
+                return 'error';
+            case 'pending':
+                return 'warning';
+            case 'unverified':
+            default:
+                return 'default';
+        }
+    };
+
+    const randomAvatarUrl = `https://i.pravatar.cc/100?img=${Math.floor(Math.random() * 70) + 1}`;
 
     return (
         <>
@@ -84,7 +113,7 @@ function DashboardContent() {
                 setTabValue={setTabValue}
                 mobileOpen={mobileOpen}
                 setMobileOpen={setMobileOpen}
-                title="Client KYC Dashboard"
+                title="Verify BVN"
             />
 
             <Box p={{ xs: 2, sm: 4 }} display="flex" flexDirection="column" alignItems="center">
@@ -128,7 +157,7 @@ function DashboardContent() {
                                 margin="normal"
                                 required
                                 InputLabelProps={{
-                                    shrink: true, // ensures label stays above the date input
+                                    shrink: true,
                                 }}
                             />
                             <Box mt={2}>
@@ -145,7 +174,6 @@ function DashboardContent() {
                         </form>
                     </Paper>
 
-
                     {error && (
                         <Typography color="error" textAlign="center" mb={2}>
                             {error}
@@ -153,18 +181,31 @@ function DashboardContent() {
                     )}
 
                     {kyc && (
-                        <Card elevation={3}>
-                            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Avatar
-                                    src="https://i.pravatar.cc/100?img=8"
-                                    sx={{ width: 64, height: 64 }}
-                                />
+                        <Card
+                            elevation={4}
+                            sx={{
+                                p: 3,
+                                borderRadius: 3,
+                                backgroundColor: 'background.paper',
+                                boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                                mt: 3,
+                            }}
+                        >
+                            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                                <Avatar src={randomAvatarUrl} sx={{ width: 72, height: 72 }} />
                                 <Box>
-                                    <Typography variant="h6">{kyc.fullName}</Typography>
+                                    <Typography variant="h5" gutterBottom>
+                                        {kyc.fullName}
+                                    </Typography>
                                     <Typography><strong>BVN:</strong> {kyc.bvn.bvn}</Typography>
                                     <Typography><strong>Date of Birth:</strong> {kyc.dob}</Typography>
-                                    <Typography><strong>State:</strong> {kyc.verified.state}</Typography>
-                                    <Typography><strong>Status:</strong> {kyc.verified.status}</Typography>
+                                    <Typography><strong>Phone Number:</strong> {kyc.bvn.phone}</Typography>
+                                    <Box mt={1}>
+                                        <Chip
+                                            label={`Status: ${kyc.verified.status}`}
+                                            color={getStatusColor(kyc.verified.status)}
+                                        />
+                                    </Box>
                                 </Box>
                             </CardContent>
                         </Card>

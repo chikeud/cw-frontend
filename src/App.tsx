@@ -10,6 +10,7 @@ import RiskPage from './pages/RiskAnalysis';
 const App: React.FC = () => {
     return (
         <Routes>
+            <Route path="/" element={<Dashboard />} />
             <Route path="/kyc" element={<Dashboard />} />
             <Route path="/risk" element={<RiskPage />} />
 

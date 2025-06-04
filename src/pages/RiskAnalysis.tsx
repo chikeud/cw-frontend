@@ -20,6 +20,8 @@ import {
     AccordionSummary,
     AccordionDetails,
     Container,
+    Tabs,
+    Tab,
 } from '@mui/material';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -46,6 +48,14 @@ const COLORS = ['#0088FE', '#FF8042', '#00C49F'];
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
+        background: {
+            default: '#121212',
+            paper: '#1e1e1e',
+        },
+        text: {
+            primary: '#fff',
+            secondary: '#aaa',
+        },
     },
 });
 
@@ -75,14 +85,14 @@ function RiskAnalysisContent() {
         setScoringData(null);
 
         try {
-            const riskRes = await fetch(` https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/risk/${accountId}`, {
+            const riskRes = await fetch(`http://localhost:3000/api/risk/${accountId}`, {
                 headers: { Authorization: 'Bearer-1509' },
             });
             if (!riskRes.ok) throw new Error('Failed to fetch risk data');
             const riskJson = await riskRes.json();
             setRiskData(riskJson);
 
-            const scoreRes = await fetch(`https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/scoring/${accountId}`, {
+            const scoreRes = await fetch(`http://localhost:3000/api/scoring/${accountId}`, {
                 headers: { Authorization: 'Bearer-1509' },
             });
             if (!scoreRes.ok) throw new Error('Failed to fetch scoring data');
@@ -152,7 +162,7 @@ function RiskAnalysisContent() {
                             <form onSubmit={(e) => { e.preventDefault(); handleFetch(); }}>
                                 <TextField
                                     fullWidth
-                                    label="Account ID"
+                                    label="Account Number"
                                     value={accountId}
                                     onChange={(e) => setAccountId(e.target.value)}
                                     onKeyDown={handleKeyDown}
@@ -219,16 +229,22 @@ function RiskAnalysisContent() {
                                 <Grid container spacing={4}>
                                     {riskData && (
                                         <Grid item xs={12} sm={6}>
-                                            <Accordion defaultExpanded={!isMobile}>
+                                            <Accordion>
                                                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                                     <Typography variant="h6">Credit vs Debit</Typography>
                                                 </AccordionSummary>
                                                 <AccordionDetails>
                                                     <ResponsiveContainer width="100%" height={300}>
                                                         <BarChart data={barData} barGap={10}>
-                                                            <XAxis dataKey="name" />
-                                                            <YAxis />
-                                                            <Tooltip />
+                                                            <XAxis dataKey="name" stroke="#aaa" />
+                                                            <YAxis stroke="#aaa" />
+                                                            <Tooltip
+                                                                contentStyle={{
+                                                                    backgroundColor: '#2c2c2c',
+                                                                    border: '1px solid #444',
+                                                                    color: '#fff',
+                                                                }}
+                                                            />
                                                             <Legend />
                                                             <Bar dataKey="Credits" fill="#4caf50" barSize={20} />
                                                             <Bar dataKey="Debits" fill="#f44336" barSize={20} />
@@ -241,7 +257,7 @@ function RiskAnalysisContent() {
 
                                     {scoringData && (
                                         <Grid item xs={12} sm={6}>
-                                            <Accordion defaultExpanded={!isMobile}>
+                                            <Accordion>
                                                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                                     <Typography variant="h6">Scoring Breakdown</Typography>
                                                 </AccordionSummary>
@@ -263,7 +279,7 @@ function RiskAnalysisContent() {
 
                                     {riskData && (
                                         <Grid item xs={12} sm={6}>
-                                            <Accordion defaultExpanded={!isMobile}>
+                                            <Accordion>
                                                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                                     <Typography variant="h6">Risk Indicators</Typography>
                                                 </AccordionSummary>
@@ -300,13 +316,55 @@ function RiskAnalysisContent() {
                                                                     />
                                                                 ))}
                                                             </Pie>
-                                                            <Tooltip />
+                                                            <Tooltip
+                                                                contentStyle={{
+                                                                    backgroundColor: '#2c2c2c',
+                                                                    border: '1px solid #444',
+                                                                    color: '#fff',
+                                                                }}
+                                                            />
                                                         </PieChart>
                                                     </ResponsiveContainer>
                                                 </AccordionDetails>
                                             </Accordion>
                                         </Grid>
                                     )}
+
+                                    <Grid item xs={12}>
+                                        <Accordion defaultExpanded={!isMobile}>
+                                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                <Typography variant="h6">Scoring Explanation</Typography>
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <List dense>
+                                                    <ListItem>
+                                                        <ListItemText
+                                                            primary="Gambling Score"
+                                                            secondary="2 or more gambling transactions = 0 points, 1 = 10 points, 0 = 20 points"
+                                                        />
+                                                    </ListItem>
+                                                    <ListItem>
+                                                        <ListItemText
+                                                            primary="Disposable Income Score"
+                                                            secondary="Full score (25) if total credits are significantly more than debits; lower otherwise"
+                                                        />
+                                                    </ListItem>
+                                                    <ListItem>
+                                                        <ListItemText
+                                                            primary="Large Cash Credits Penalty"
+                                                            secondary="0 entries = 15 points, 1–2 entries = 10 points, >2 = 5 points"
+                                                        />
+                                                    </ListItem>
+                                                    <ListItem>
+                                                        <ListItemText
+                                                            primary="Reversals Penalty"
+                                                            secondary="Same scale as Large Cash Credits Penalty"
+                                                        />
+                                                    </ListItem>
+                                                </List>
+                                            </AccordionDetails>
+                                        </Accordion>
+                                    </Grid>
                                 </Grid>
                             </>
                         )}
