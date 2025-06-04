@@ -85,14 +85,14 @@ function RiskAnalysisContent() {
         setScoringData(null);
 
         try {
-            const riskRes = await fetch(`http://localhost:3000/api/risk/${accountId}`, {
+            const riskRes = await fetch(` https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/risk/${accountId}`, {
                 headers: { Authorization: 'Bearer-1509' },
             });
             if (!riskRes.ok) throw new Error('Failed to fetch risk data');
             const riskJson = await riskRes.json();
             setRiskData(riskJson);
 
-            const scoreRes = await fetch(`http://localhost:3000/api/scoring/${accountId}`, {
+            const scoreRes = await fetch(` https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/scoring/${accountId}`, {
                 headers: { Authorization: 'Bearer-1509' },
             });
             if (!scoreRes.ok) throw new Error('Failed to fetch scoring data');
