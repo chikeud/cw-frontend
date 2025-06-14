@@ -23,7 +23,7 @@ import BadgeIcon from '@mui/icons-material/Badge';
 const darkTheme = createTheme({ palette: { mode: 'dark' } });
 
 const navItems: NavItem[] = [
-    { label: 'CreditChecc', icon: <DashboardIcon />, href: '/dashboard' },
+    { label: 'CreditChecc', icon: <DashboardIcon />, href: '/cc' },
     { label: 'Risk', icon: <VerifiedUserIcon />, href: '/risk' },
     { label: 'KYC Verify', icon: <BadgeIcon />, href: '/kyc' },
 ];
