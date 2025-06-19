@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {
+    Accordion,
+    AccordionSummary, AccordionDetails,
     Box,
     Typography,
     TextField,
@@ -58,7 +60,7 @@ const SmartScoreAnalysis = () => {
         setScoreData(null);
 
         try {
-            const res = await fetch(`http://localhost:3000/api/cc/${bvn}`, {
+            const res = await fetch(`https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/cc/${bvn}`, {
                 headers: { Authorization: 'Bearer 1509' },
             });
 
@@ -212,56 +214,123 @@ const SmartScoreAnalysis = () => {
                                 </Card>
                             )}
                             <Card sx={{ borderRadius: '20px' }}>
-                                <CardContent>
-                                    <Typography variant="h6" gutterBottom>
-                                        How Scores Are Calculated
-                                    </Typography>
+                                <Accordion defaultExpanded>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography variant="h6">How Scores Are Calculated</Typography>
+                                    </AccordionSummary>
 
-                                    <Box mb={2}>
-                                        <Typography variant="subtitle1" color="primary">Income Stability</Typography>
-                                        <Typography variant="body2">
-                                            Calculated as <code>100 - (Income Volatility × 100)</code>. Lower volatility (more stable income) leads to a higher score.
-                                        </Typography>
-                                    </Box>
+                                <AccordionDetails>
 
-                                    <Box mb={2}>
-                                        <Typography variant="subtitle1" color="primary">Loan History</Typography>
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography color="primary">Income Stability</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
                                         <Typography variant="body2">
-                                            Based on the number and status of past loans. Active and repaid loans increase the score, while defaulted or written-off loans reduce it.
-                                        </Typography>
-                                    </Box>
-
-                                    <Box mb={2}>
-                                        <Typography variant="subtitle1" color="primary">Employment Score</Typography>
-                                        <Typography variant="body2">
-                                            If the individual is employed, score = 100. If not employed, score = 30.
-                                        </Typography>
-                                    </Box>
-
-                                    <Box mb={2}>
-                                        <Typography variant="subtitle1" color="primary">Transaction Volume</Typography>
-                                        <Typography variant="body2">
-                                            Based on how many transactions were observed. Fewer than 10 transactions is poor, while over 30 indicates very strong activity.
-                                        </Typography>
-                                    </Box>
-
-                                    <Box mb={2}>
-                                        <Typography variant="subtitle1" color="primary">Expense Ratio</Typography>
-                                        <Typography variant="body2">
-                                            The ratio of expenses to income. A low ratio (less spending relative to income) results in a higher score.
+                                            This is based on how consistent the user's income is over time. It's calculated using the standard deviation of monthly income from Open Banking transaction data.
                                             <br />
-                                            For example:
-                                            <ul style={{marginTop: '5px'}}>
+                                            Steps:
+                                            <ul style={{ marginTop: '5px' }}>
+                                                <li>Fetch salary/income-related credit transactions over the past 6 months</li>
+                                                <li>Group them by month and total each month's income</li>
+                                                <li>Compute the <strong>standard deviation</strong> of the monthly values</li>
+                                                <li>Divide by average income to get the <em>income volatility</em></li>
+                                            </ul>
+                                            Score formula: <code>100 - (Income Volatility × 100)</code>.
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography color="primary">Expense Ratio</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography variant="body2">
+                                            The ratio of expenses to income. A low ratio means better financial behavior.
+                                            <ul style={{ marginTop: '5px' }}>
                                                 <li>≤ 0.5 → Excellent (Score: 90)</li>
                                                 <li>0.51 – 0.75 → Good (Score: 75)</li>
                                                 <li>0.76 – 1.0 → Average (Score: 55)</li>
                                                 <li>&gt; 1.0 → Poor (Score: 35)</li>
                                             </ul>
-
                                         </Typography>
-                                    </Box>
-                                </CardContent>
+                                    </AccordionDetails>
+                                </Accordion>
+
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography color="primary">Recurring Payment Reliability</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography variant="body2">
+                                            Measures how consistently recurring payments (like rent or utilities) succeed.
+                                            <br />
+                                            Score based on average success rate:
+                                            <ul style={{ marginTop: '5px' }}>
+                                                <li>≥ 0.95 → Excellent (Score: 90)</li>
+                                                <li>0.85 – 0.94 → Good (Score: 75)</li>
+                                                <li>&lt; 0.85 → Fair (Score: 60)</li>
+                                            </ul>
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography color="primary">Overdraft Behavior</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography variant="body2">
+                                            Based on overdraft occurrences in the last 90 days.
+                                            <ul style={{ marginTop: '5px' }}>
+                                                <li>0 overdrafts → Excellent (Score: 90)</li>
+                                                <li>1–2 overdrafts → Fair (Score: 70)</li>
+                                                <li>3+ overdrafts → Risky (Score: 50)</li>
+                                            </ul>
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography color="primary">Loan Repayment Ratio</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography variant="body2">
+                                            Measures monthly loan burden relative to income.
+                                            <br />
+                                            Formula: <code>loan_repayment / avg_monthly_income</code>
+                                            <ul style={{ marginTop: '5px' }}>
+                                                <li>≤ 0.2 → Healthy (Score: 85)</li>
+                                                <li>0.21 – 0.35 → Moderate (Score: 70)</li>
+                                                <li>0.36 – 0.5 → High (Score: 55)</li>
+                                                <li>&gt; 0.5 → Concerning (Score: 35)</li>
+                                            </ul>
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+
+                                <Accordion>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography color="primary">Account Profile</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography variant="body2">
+                                            Factors in how long the account has existed and if multiple accounts are active.
+                                            <ul style={{ marginTop: '5px' }}>
+                                                <li>Age ≥ 24 months → (Score: 90)</li>
+                                                <li>12–23 months → (Score: 75)</li>
+                                                <li>&lt; 12 months → (Score: 50)</li>
+                                                <li>+10 bonus if number of accounts &gt; 1</li>
+                                            </ul>
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+                                </AccordionDetails>
+                                </Accordion>
                             </Card>
+
                         </Box>
                     )}
                 </Container>
