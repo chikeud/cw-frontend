@@ -20,7 +20,7 @@ import {
     ThemeProvider,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SharedNavBar, {NavItem} from "./components/SharedNavBar";
+import SharedNavBar, { NavItem } from "./components/SharedNavBar";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import BadgeIcon from "@mui/icons-material/Badge";
@@ -38,33 +38,32 @@ const darkTheme = createTheme({
         },
     },
 });
+
 const navItems: NavItem[] = [
     { label: 'CreditChecc', icon: <DashboardIcon />, href: '/cc' },
     { label: 'Risk', icon: <VerifiedUserIcon />, href: '/risk' },
     { label: 'KYC Verify', icon: <BadgeIcon />, href: '/kyc' },
 ];
 
-
 const SmartScoreAnalysis = () => {
     const isMobile = useMediaQuery('(max-width:600px)');
-    const [accountId, setAccountId] = useState('');
-    const [scoreData, setScoreData] = useState(null);
+    const [bvn, setbvn] = useState('');
+    const [scoreData, setScoreData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [expanded, setExpanded] = useState(true);
-    const [tabValue, setTabValue] = useState(0); // KYC tab
+    const [tabValue, setTabValue] = useState(0);
     const [mobileOpen, setMobileOpen] = useState(false);
 
-
     const handleFetch = async () => {
-        if (!accountId.trim()) return;
+        if (!bvn.trim()) return;
         setLoading(true);
         setError('');
         setScoreData(null);
 
         try {
-            const res = await fetch(`https://credit-wallet-9d4e5e5f290e.herokuapp.com/api/scoring/${accountId}`, {
-                headers: { Authorization: 'Bearer-1509' },
+            const res = await fetch(`http://localhost:3000/api/cc/${bvn}`, {
+                headers: { Authorization: 'Bearer 1509' },
             });
 
             if (!res.ok) throw new Error('Failed to fetch scoring data');
@@ -102,8 +101,8 @@ const SmartScoreAnalysis = () => {
                             <TextField
                                 fullWidth
                                 label="BVN"
-                                value={accountId}
-                                onChange={(e) => setAccountId(e.target.value)}
+                                value={bvn}
+                                onChange={(e) => setbvn(e.target.value)}
                                 onKeyDown={handleKeyDown}
                                 margin="normal"
                                 autoComplete="off"
@@ -114,7 +113,7 @@ const SmartScoreAnalysis = () => {
                                     variant="contained"
                                     color="primary"
                                     onClick={handleFetch}
-                                    disabled={loading || !accountId.trim()}
+                                    disabled={loading || !bvn.trim()}
                                     size="large"
                                     type="submit"
                                 >
@@ -137,7 +136,7 @@ const SmartScoreAnalysis = () => {
                                         Composite Score
                                     </Typography>
                                     <Typography variant="h3" color="primary">
-                                        {scoreData.compositeScore}
+                                        {scoreData.compositeScore ?? 'N/A'}
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -147,29 +146,42 @@ const SmartScoreAnalysis = () => {
                                     <Typography variant="h6" color="textSecondary" gutterBottom>
                                         Risk Level
                                     </Typography>
-                                    <Typography variant="h4" color={scoreData.riskLevel === 'low' ? 'success.main' : scoreData.riskLevel === 'moderate' ? 'warning.main' : 'error.main'}>
-                                        {scoreData.riskLevel.toUpperCase()}
+                                    <Typography
+                                        variant="h4"
+                                        color={
+                                            scoreData.riskLevel === 'low'
+                                                ? 'success.main'
+                                                : scoreData.riskLevel === 'moderate'
+                                                    ? 'warning.main'
+                                                    : scoreData.riskLevel === 'high'
+                                                        ? 'error.main'
+                                                        : 'text.secondary'
+                                        }
+                                    >
+                                        {scoreData.riskLevel?.toUpperCase() ?? 'UNKNOWN'}
                                     </Typography>
                                 </CardContent>
                             </Card>
 
-                            <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)} sx={{ borderRadius: '20px' }}>
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                    <Typography variant="h6">Score Breakdown</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <List dense>
-                                        {Object.entries(scoreData.breakdown).map(([key, val]) => (
-                                            <ListItem key={key}>
-                                                <ListItemText
-                                                    primary={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
-                                                    secondary={`Score: ${val}`}
-                                                />
-                                            </ListItem>
-                                        ))}
-                                    </List>
-                                </AccordionDetails>
-                            </Accordion>
+                            {scoreData.breakdown && (
+                                <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)} sx={{ borderRadius: '20px' }}>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography variant="h6">Score Breakdown</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <List dense>
+                                            {Object.entries(scoreData.breakdown).map(([key, val]) => (
+                                                <ListItem key={key}>
+                                                    <ListItemText
+                                                        primary={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
+                                                        secondary={`Score: ${val}`}
+                                                    />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </AccordionDetails>
+                                </Accordion>
+                            )}
                         </Box>
                     )}
                 </Container>
