@@ -8,12 +8,6 @@ import {
     Paper,
     Card,
     CardContent,
-    List,
-    ListItem,
-    ListItemText,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
     Container,
     useMediaQuery,
     createTheme,
@@ -24,6 +18,9 @@ import SharedNavBar, { NavItem } from "./components/SharedNavBar";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import BadgeIcon from "@mui/icons-material/Badge";
+import {
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList
+} from 'recharts';
 
 const darkTheme = createTheme({
     palette: {
@@ -51,7 +48,6 @@ const SmartScoreAnalysis = () => {
     const [scoreData, setScoreData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [expanded, setExpanded] = useState(true);
     const [tabValue, setTabValue] = useState(0);
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -82,6 +78,21 @@ const SmartScoreAnalysis = () => {
             handleFetch();
         }
     };
+
+    const breakdownData = scoreData?.breakdown
+        ? Object.entries(scoreData.breakdown).map(([key, value]) => ({
+            name: key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()),
+            score: value,
+            grade:
+                value >= 85
+                    ? 'Excellent'
+                    : value >= 70
+                        ? 'Good'
+                        : value >= 55
+                            ? 'Average'
+                            : 'Poor',
+        }))
+        : [];
 
     return (
         <ThemeProvider theme={darkTheme}>
@@ -130,6 +141,7 @@ const SmartScoreAnalysis = () => {
 
                     {scoreData && (
                         <Box display="flex" flexDirection="column" gap={3}>
+                            {/* Composite Score */}
                             <Card sx={{ borderRadius: '20px' }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
                                     <Typography variant="h6" color="textSecondary" gutterBottom>
@@ -141,6 +153,7 @@ const SmartScoreAnalysis = () => {
                                 </CardContent>
                             </Card>
 
+                            {/* Risk Level */}
                             <Card sx={{ borderRadius: '20px' }}>
                                 <CardContent sx={{ textAlign: 'center' }}>
                                     <Typography variant="h6" color="textSecondary" gutterBottom>
@@ -153,9 +166,7 @@ const SmartScoreAnalysis = () => {
                                                 ? 'success.main'
                                                 : scoreData.riskLevel === 'moderate'
                                                     ? 'warning.main'
-                                                    : scoreData.riskLevel === 'high'
-                                                        ? 'error.main'
-                                                        : 'text.secondary'
+                                                    : 'error.main'
                                         }
                                     >
                                         {scoreData.riskLevel?.toUpperCase() ?? 'UNKNOWN'}
@@ -163,25 +174,94 @@ const SmartScoreAnalysis = () => {
                                 </CardContent>
                             </Card>
 
-                            {scoreData.breakdown && (
-                                <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)} sx={{ borderRadius: '20px' }}>
-                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                        <Typography variant="h6">Score Breakdown</Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <List dense>
-                                            {Object.entries(scoreData.breakdown).map(([key, val]) => (
-                                                <ListItem key={key}>
-                                                    <ListItemText
-                                                        primary={key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}
-                                                        secondary={`Score: ${val}`}
-                                                    />
-                                                </ListItem>
-                                            ))}
-                                        </List>
-                                    </AccordionDetails>
-                                </Accordion>
+                            {/* Breakdown Chart */}
+                            {breakdownData.length > 0 && (
+                                <Card sx={{ borderRadius: '20px' }}>
+                                    <CardContent>
+                                        <Typography variant="h6" gutterBottom>
+                                            Score Breakdown
+                                        </Typography>
+                                        <ResponsiveContainer width="100%" height={300}>
+                                            <BarChart
+                                                data={breakdownData}
+                                                layout="vertical"
+                                                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                                            >
+                                                <CartesianGrid strokeDasharray="3 3" />
+                                                <XAxis type="number" domain={[0, 100]} />
+                                                <YAxis dataKey="name" type="category" width={150} />
+                                                <Tooltip
+                                                    content={({ active, payload }) => {
+                                                        if (!active || !payload || !payload.length) return null;
+                                                        const item = payload[0].payload;
+                                                        return (
+                                                            <Paper sx={{ p: 1 }}>
+                                                                <Typography variant="body2"><strong>{item.name}</strong></Typography>
+                                                                <Typography variant="body2">Score: {item.score}</Typography>
+                                                                <Typography variant="body2">Grade: {item.grade}</Typography>
+                                                            </Paper>
+                                                        );
+                                                    }}
+                                                />
+                                                <Bar dataKey="score" fill="#1976d2">
+                                                    <LabelList dataKey="score" position="right" fill="#fff" />
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </CardContent>
+                                </Card>
                             )}
+                            <Card sx={{ borderRadius: '20px' }}>
+                                <CardContent>
+                                    <Typography variant="h6" gutterBottom>
+                                        How Scores Are Calculated
+                                    </Typography>
+
+                                    <Box mb={2}>
+                                        <Typography variant="subtitle1" color="primary">Income Stability</Typography>
+                                        <Typography variant="body2">
+                                            Calculated as <code>100 - (Income Volatility × 100)</code>. Lower volatility (more stable income) leads to a higher score.
+                                        </Typography>
+                                    </Box>
+
+                                    <Box mb={2}>
+                                        <Typography variant="subtitle1" color="primary">Loan History</Typography>
+                                        <Typography variant="body2">
+                                            Based on the number and status of past loans. Active and repaid loans increase the score, while defaulted or written-off loans reduce it.
+                                        </Typography>
+                                    </Box>
+
+                                    <Box mb={2}>
+                                        <Typography variant="subtitle1" color="primary">Employment Score</Typography>
+                                        <Typography variant="body2">
+                                            If the individual is employed, score = 100. If not employed, score = 30.
+                                        </Typography>
+                                    </Box>
+
+                                    <Box mb={2}>
+                                        <Typography variant="subtitle1" color="primary">Transaction Volume</Typography>
+                                        <Typography variant="body2">
+                                            Based on how many transactions were observed. Fewer than 10 transactions is poor, while over 30 indicates very strong activity.
+                                        </Typography>
+                                    </Box>
+
+                                    <Box mb={2}>
+                                        <Typography variant="subtitle1" color="primary">Expense Ratio</Typography>
+                                        <Typography variant="body2">
+                                            The ratio of expenses to income. A low ratio (less spending relative to income) results in a higher score.
+                                            <br />
+                                            For example:
+                                            <ul style={{marginTop: '5px'}}>
+                                                <li>≤ 0.5 → Excellent (Score: 90)</li>
+                                                <li>0.51 – 0.75 → Good (Score: 75)</li>
+                                                <li>0.76 – 1.0 → Average (Score: 55)</li>
+                                                <li>&gt; 1.0 → Poor (Score: 35)</li>
+                                            </ul>
+
+                                        </Typography>
+                                    </Box>
+                                </CardContent>
+                            </Card>
                         </Box>
                     )}
                 </Container>
