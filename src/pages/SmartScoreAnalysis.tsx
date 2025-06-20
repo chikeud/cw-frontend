@@ -43,7 +43,7 @@ const navItems: NavItem[] = [
     { label: 'CreditChecc', icon: <DashboardIcon />, href: '/cc' },
     { label: 'Risk', icon: <VerifiedUserIcon />, href: '/risk' },
     { label: 'KYC Verify', icon: <BadgeIcon />, href: '/kyc' },
-    { label: 'Test Users', icon: <MenuBookIcon />, href: '/data' },
+    { label: 'Demo Users', icon: <MenuBookIcon />, href: '/data' },
 ];
 
 const SmartScoreAnalysis = () => {
