@@ -13,11 +13,12 @@ import {
     Container,
     useMediaQuery,
     createTheme,
-    ThemeProvider,
+    ThemeProvider, ListItemIcon,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SharedNavBar, { NavItem } from "./components/SharedNavBar";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import BadgeIcon from "@mui/icons-material/Badge";
 import {
@@ -42,6 +43,7 @@ const navItems: NavItem[] = [
     { label: 'CreditChecc', icon: <DashboardIcon />, href: '/cc' },
     { label: 'Risk', icon: <VerifiedUserIcon />, href: '/risk' },
     { label: 'KYC Verify', icon: <BadgeIcon />, href: '/kyc' },
+    { label: 'Test Users', icon: <MenuBookIcon />, href: '/data' },
 ];
 
 const SmartScoreAnalysis = () => {
@@ -151,6 +153,9 @@ const SmartScoreAnalysis = () => {
                                     </Typography>
                                     <Typography variant="h3" color="primary">
                                         {scoreData.compositeScore ?? 'N/A'}
+                                        <Typography variant="h6" color="primary">
+                                            / 800
+                                        </Typography>
                                     </Typography>
                                 </CardContent>
                             </Card>

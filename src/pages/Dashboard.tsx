@@ -12,11 +12,12 @@ import {
     TextField,
     ThemeProvider,
     Typography,
-    createTheme,
+    createTheme, ListItemIcon,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SharedNavBar, { NavItem } from './components/SharedNavBar.tsx';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import BadgeIcon from '@mui/icons-material/Badge';
 
@@ -26,6 +27,7 @@ const navItems: NavItem[] = [
     { label: 'CreditChecc', icon: <DashboardIcon />, href: '/cc' },
     { label: 'Risk', icon: <VerifiedUserIcon />, href: '/risk' },
     { label: 'KYC Verify', icon: <BadgeIcon />, href: '/kyc' },
+    { label: 'Demo Users', icon: <MenuBookIcon />, href: '/data' },
 ];
 
 type KycResponse = {

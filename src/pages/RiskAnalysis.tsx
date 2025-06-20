@@ -21,7 +21,7 @@ import {
     AccordionDetails,
     Container,
     Tabs,
-    Tab,
+    Tab, ListItemIcon,
 } from '@mui/material';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -40,6 +40,7 @@ import {
 
 import SharedNavBar from './components/SharedNavBar.tsx';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import BadgeIcon from '@mui/icons-material/Badge';
 
@@ -63,6 +64,7 @@ const navItems = [
     { label: 'CreditChecc', icon: <DashboardIcon />, href: '/cc' },
     { label: 'Risk', icon: <VerifiedUserIcon />, href: '/risk' },
     { label: 'KYC Verify', icon: <BadgeIcon />, href: '/kyc' },
+    { label: 'Demo Users', icon: <MenuBookIcon />, href: '/data' },
 ];
 
 function RiskAnalysisContent() {

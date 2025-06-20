@@ -87,7 +87,10 @@ export default function SharedNavBar({
                             <MenuIcon />
                         </IconButton>
                     )}
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" sx={{ flexGrow: 1, fontFamily: `'Trebuchet MS', 'Segoe UI', sans-serif`,
+                        fontWeight: 700,
+                        letterSpacing: '0.08em',
+                    }}>
                         {title}
                     </Typography>
                     {!isMobile && (
