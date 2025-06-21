@@ -46,7 +46,7 @@ const navItems: NavItem[] = [
 const TestCredentials = () => {
     const isMobile = useMediaQuery('(max-width:600px)');
     const [error, setError] = useState('');
-    const [tabValue, setTabValue] = useState(0);
+    const [tabValue, setTabValue] = useState(3);
     const [mobileOpen, setMobileOpen] = useState(false);
 
 
